@@ -8,7 +8,7 @@
 # Start from Microsoft's official image that already contains Python,
 # Chromium/Firefox/WebKit and all the system libraries browsers need.
 # The version here must match playwright==... in requirements.txt.
-FROM mcr.microsoft.com/playwright/python:v1.48.0-jammy
+FROM mcr.microsoft.com/playwright/python:v1.64.0-jammy
 
 # All following commands run inside this folder in the image.
 WORKDIR /app
