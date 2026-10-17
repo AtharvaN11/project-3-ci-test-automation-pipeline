@@ -1,0 +1,49 @@
+# ---------------------------------------------------------------
+# GitHub Actions workflow. GitHub reads every file in
+# .github/workflows/ and runs it automatically when a trigger fires.
+# ---------------------------------------------------------------
+name: CI Tests
+
+# TRIGGERS: when should this workflow run?
+on:
+  push:
+    branches: [main]        # every push to main
+  pull_request:
+    branches: [main]        # every pull request targeting main
+  schedule:
+    - cron: "30 2 * * *"    # every day at 02:30 UTC (= 08:00 IST)
+  workflow_dispatch:        # adds a manual "Run workflow" button in the Actions tab
+
+jobs:
+  test:
+    name: Run API + UI tests in Docker
+    runs-on: ubuntu-latest  # GitHub gives us a fresh Linux VM for each run
+    timeout-minutes: 15     # kill the job if it hangs
+
+    steps:
+      # 1. Download the repository code onto the VM
+      - name: Check out code
+        uses: actions/checkout@v4
+
+      # 2. Build the Docker image from our Dockerfile
+      - name: Build test image
+        run: docker build -t test-suite .
+
+      # 3. Run the whole suite inside a container.
+      #    -v mounts the VM's ./reports folder into the container so the
+      #    report files survive after the container is deleted (--rm).
+      - name: Run tests
+        run: |
+          mkdir -p reports
+          docker run --rm -v "$PWD/reports:/app/reports" test-suite
+
+      # 4. Upload the reports so they can be downloaded from the run page.
+      #    "if: always()" = do this even when tests FAIL (that's when
+      #    you most need the report).
+      - name: Upload test reports
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-reports
+          path: reports/
+          retention-days: 14

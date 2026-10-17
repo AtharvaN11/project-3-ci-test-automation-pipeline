@@ -1,0 +1,13 @@
+# Test runner
+pytest==8.3.3
+
+# API testing: lets Python send HTTP requests (GET, POST, ...)
+requests==2.32.3
+
+# UI testing: controls a real browser (Chromium) from Python.
+# NOTE: the playwright version must match the Docker base image tag in the Dockerfile.
+playwright>=1.55.0,<2.0.0
+pytest-playwright>=0.7.1,<1.0.0
+
+# Generates a nice HTML test report
+pytest-html==4.1.1
